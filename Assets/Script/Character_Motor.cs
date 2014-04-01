@@ -7,6 +7,7 @@ public class Character_Motor : MonoBehaviour {
 	public static Character_Motor Instance;
 
 	public Vector3 MoveVector;
+	public Vector3 SlideVector;
 
 	//Max gravity velocity
 	public float TerminalVelocity = 10f;
@@ -35,6 +36,7 @@ public class Character_Motor : MonoBehaviour {
 		this.MoveVector *= this.maxSpeed * Time.deltaTime;
 		this.MoveVector.y = Character_Manager.Instance.VerticalVelocity;
 
+		this.Slide();
 		this.ApplyGravity();
 		Character_Manager.CharacterControllerComponent.Move(this.MoveVector);
 	}
@@ -51,6 +53,29 @@ public class Character_Motor : MonoBehaviour {
 //		Quaternion rotation3Dsmax = Quaternion.Euler(eulerAngles);
 //
 //		this.transform.rotation = rotation3Dsmax;
+	}
+
+
+	private void Slide() {
+		if (!Character_Manager.CharacterControllerComponent.isGrounded) {
+			return;
+		}
+		this.SlideVector = Vector3.zero;
+		RaycastHit hit;
+		if (!Physics.Raycast(this.transform.position + Vector3.up,
+		                    Vector3.down,
+		                    out hit)) {
+			return;
+		}
+		this.SlideVector = hit.normal;
+		//Debug.Log(hit.normal);
+		if (this.SlideVector.y < 0.9f) {
+			if (this.SlideVector.magnitude < 0.5f) {//random value++
+				this.MoveVector += this.transform.TransformDirection(this.SlideVector) * 10.0f * Time.deltaTime;
+			} else {
+				this.MoveVector = this.transform.TransformDirection(this.SlideVector) * 10.0f * Time.deltaTime;
+			}
+		}
 	}
 
 	private void ApplyGravity() {
