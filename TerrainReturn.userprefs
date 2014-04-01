@@ -1,0 +1,14 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Script\Character_Manager.cs">
+    <Files>
+      <File FileName="Assets\Script\Character_Manager.cs" Line="11" Column="32" />
+      <File FileName="Assets\Script\Character_Motor.cs" Line="52" Column="2" />
+      <File FileName="i:\Keimyung\Semester2\Unity\TerrainReturn\Assets\TerrainToolkit\Editor\TerrainToolkitEditor.cs" Line="864" Column="12" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
