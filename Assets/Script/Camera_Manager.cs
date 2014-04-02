@@ -45,15 +45,13 @@ public class Camera_Manager : MonoBehaviour {
 	private	void VerifyUserMouseInput() {
 		//if right button pressed, do nothing (DEBUG)
 		if (Input.GetButton("Fire2")) {
-			return;
+			this.MouseX += Input.GetAxis("Mouse X") * this.MouseSens;
+			this.MouseY += -Input.GetAxis("Mouse Y") * this.MouseSens;
+			this.MouseWheel += Input.GetAxis("Mouse ScrollWheel") * this.MouseWheelSpeed;
+			this.MouseY = Helper.CameraClamp(this.MouseY, -10, 80);
 		}
-		this.MouseX += Input.GetAxis("Mouse X") * this.MouseSens;
-		this.MouseY += Input.GetAxis("Mouse Y") * this.MouseSens;
-		this.MouseWheel += Input.GetAxis("Mouse ScrollWheel") * this.MouseWheelSpeed;
 		//Clamp mouseY
-		this.MouseY = Helper.CameraClamp(this.MouseY, -50, 80);
 		SmoothCameraPosition();
-
 	}
 
 	public void SmoothCameraPosition() {
