@@ -58,7 +58,6 @@ public class Camera_Manager : MonoBehaviour {
 		this.MouseX += Input.GetAxis("Mouse X") * this.MouseSens;
 		this.MouseY += Input.GetAxis("Mouse Y") * this.MouseSens;
 		this.MouseWheel += Input.GetAxis("Mouse ScrollWheel") * this.MouseWheelSpeed;
-		//Debug.Log(this.MouseX + " " + this.MouseY + " " + this.MouseWheel);
 		//Clamp mouseY
 		this.MouseY = Helper.CameraClamp(this.MouseY, -50, 80);
 		SmoothCameraPosition();
@@ -73,7 +72,6 @@ public class Camera_Manager : MonoBehaviour {
 //		this.MouseX = newMouseX;
 
 		float clampedMouseWheel = Mathf.Clamp(this.MouseWheel, this.MinDist, this.MaxDist);
-		Debug.Log(clampedMouseWheel);
 
 		float newMouseWheel = Mathf.SmoothDamp(this.OldMouseWheel, clampedMouseWheel, ref this.MouseWheelVelocity, 0.3f);
 		this.OldMouseWheel = newMouseWheel;
