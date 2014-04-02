@@ -19,7 +19,7 @@ public class Camera_Manager : MonoBehaviour {
 	public float MouseXVelocity;
 	public float MouseY;
 	public float MouseYVelocity;
-	public float MouseSens = 2.0f;
+	public float MouseSens = 5.0f;
 	public float MouseWheel;
 	public float OldMouseWheel;
 
@@ -101,8 +101,6 @@ public class Camera_Manager : MonoBehaviour {
 	public static void InitialCameraCheck() {
 
 		//initialize targetLookAt
-
-
 		//initialize camera
 		if (Camera.main == null) {
 			GameObject tmpCamera = new GameObject("MainCamera");
