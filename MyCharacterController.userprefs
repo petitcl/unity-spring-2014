@@ -1,9 +1,10 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Script\Camera_Manager.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Script\Character_Motor.cs">
     <Files>
-      <File FileName="Assets\Script\Character_Motor.cs" Line="1" Column="1" />
-      <File FileName="Assets\Script\Camera_Manager.cs" Line="22" Column="28" />
+      <File FileName="Assets\Script\Character_Motor.cs" Line="72" Column="17" />
+      <File FileName="Assets\Script\Character_Manager.cs" Line="1" Column="1" />
+      <File FileName="Assets\Script\Character_Motor.cs" Line="72" Column="17" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
