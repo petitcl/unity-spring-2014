@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class Camera_Manager : MonoBehaviour {
@@ -15,10 +15,13 @@ public class Camera_Manager : MonoBehaviour {
 	public float MouseWheelSpeed = 10.0f;
 
 
+
+	public Vector3 SmoothedCameraPosition;
+	public Vector3 CameraVelocity;
+
 	public float MouseX;
-	public float MouseXVelocity;
 	public float MouseY;
-	public float MouseYVelocity;
+
 	public float MouseSens = 2.0f;
 	public float MouseWheel;
 	public float OldMouseWheel;
@@ -65,29 +68,25 @@ public class Camera_Manager : MonoBehaviour {
 	}
 
 	public void SmoothCameraPosition() {
-//		float newMouseY =  Mathf.SmoothDamp (this.MouseY, mouseY, ref this.MouseYVelocity,0.3f);
-//		this.MouseY = newMouseY;
-//
-//		float newMouseX =  Mathf.SmoothDamp (this.MouseX, mouseX, ref this.MouseXVelocity,0.3f);
-//		this.MouseX = newMouseX;
 
 		float clampedMouseWheel = Mathf.Clamp(this.MouseWheel, this.MinDist, this.MaxDist);
+		float newMouseWheel = Mathf.SmoothDamp(this.OldMouseWheel, clampedMouseWheel, ref this.CameraVelocity.z, 0.3f);
 
-		float newMouseWheel = Mathf.SmoothDamp(this.OldMouseWheel, clampedMouseWheel, ref this.MouseWheelVelocity, 0.3f);
 		this.OldMouseWheel = newMouseWheel;
-		Vector3 positionVector = this.CreatePositionVector(this.MouseX, this.MouseY, newMouseWheel);
-		Vector3 smoothedPosition = this.SmoothCameraAxis(positionVector);
-		this.ApplyCameraPosition(smoothedPosition);
+		this.SmoothCameraAxis();
+		Vector3 positionVector = this.CreatePositionVector(this.SmoothedCameraPosition.x, this.SmoothedCameraPosition.y, newMouseWheel);
+		this.ApplyCameraPosition(positionVector);
 	}
 
-	public Vector3	SmoothCameraAxis(Vector3 desiredPosition) {
-		Vector3 smoothedPosition = Vector3.up;
-		return desiredPosition;
+	public void	SmoothCameraAxis() {
+		this.SmoothedCameraPosition.x = Mathf.SmoothDamp(this.SmoothedCameraPosition.x, this.MouseX, ref this.CameraVelocity.x, 0.3f);
+		this.SmoothedCameraPosition.y = Mathf.SmoothDamp(this.SmoothedCameraPosition.y, this.MouseY, ref this.CameraVelocity.y, 0.3f);
 	}
 
 	public Vector3 CreatePositionVector(float mouseX, float mouseY, float dist) {
-		Quaternion	rotation = Quaternion.Euler(mouseY, mouseX, 0.0f);
-		return this.TargetLookAt.transform.position + (rotation * Vector3.forward * -dist);
+		Quaternion cameraRotation = Quaternion.Euler(mouseY, mouseX, 0.0f);
+		Vector3 cameraPosition = this.TargetLookAt.transform.position + (cameraRotation * Vector3.forward * -dist);
+		return cameraPosition;
 	}
 
 	public void	ApplyCameraPosition(Vector3 newPos) {
