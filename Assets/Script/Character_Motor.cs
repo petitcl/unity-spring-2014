@@ -15,6 +15,8 @@ public class Character_Motor : MonoBehaviour {
 
 	public float JumpImpulse = 10f;
 
+	public static Quaternion MODEL_3DSMAX = Quaternion.Euler(-90, 0, 0);
+
 	// Use this for initialization
 	private void Awake () {
 		Instance = this;
@@ -22,12 +24,13 @@ public class Character_Motor : MonoBehaviour {
 
 	// Update is called once per frame
 	public void ControlledUpdate() {
-		AlignCharacterToCameraDirection();
+		if (Character_Manager.Instance.InputUpdated) {
+			AlignCharacterToCameraDirection();
+		}
 		ProcessMotion();
 	}
 
 	private void ProcessMotion() {
-
 		this.MoveVector = this.transform.TransformDirection(this.MoveVector);
 		if (this.MoveVector.magnitude > 1) {
 			this.MoveVector.Normalize();
@@ -38,19 +41,15 @@ public class Character_Motor : MonoBehaviour {
 		this.ApplyGravity();
 		Character_Manager.CharacterControllerComponent.Move(this.MoveVector);
 	}
-	
-	private void AlignCharacterToCameraDirection() {
-//		Vector3 view = -(Camera_Manager.Instance.TargetLookAt.transform.position - Camera.main.transform.position);
-//		this.transform.LookAt(this.transform.position + view, Vector3.forward);
 
-		//Camera TargetLookAt vector
-//		Vector3 eulerAngles = new Vector3(
-//			this.transform.rotation.eulerAngles.x,
-//			this.transform.rotation.eulerAngles.y,
-//			Camera.main.transform.rotation.eulerAngles.y);
-//		Quaternion rotation3Dsmax = Quaternion.Euler(eulerAngles);
-//
-//		this.transform.rotation = rotation3Dsmax;
+	private void AlignCharacterToCameraDirection() {
+		Camera cam = Camera.main;
+		GameObject cha = this.gameObject;
+
+		Vector3 lookAt = cam.transform.forward;
+		lookAt.y = 0;
+		Quaternion lookAtRotation = Quaternion.LookRotation(lookAt);
+		cha.transform.rotation = lookAtRotation * MODEL_3DSMAX;
 	}
 
 	private void ApplyGravity() {

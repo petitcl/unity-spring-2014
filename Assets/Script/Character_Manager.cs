@@ -14,6 +14,14 @@ public class Character_Manager : MonoBehaviour {
 
 	public float VerticalVelocity;
 
+	private bool inputUpdated;
+
+	public bool InputUpdated {
+		get {
+			return inputUpdated;
+		}
+	}
+
 	// Use this for initialization
 	private void Start() {
 	
@@ -33,8 +41,8 @@ public class Character_Manager : MonoBehaviour {
 	private void Update() {
 //		if (GetComponent<Camera>() != null) {
 		this.ControllerInput();
-		this.ActionInput();
-		Character_Motor.Instance.ControlledUpdate();
+			this.ActionInput();
+			Character_Motor.Instance.ControlledUpdate();
 //		}
 	}
 
@@ -42,14 +50,18 @@ public class Character_Manager : MonoBehaviour {
 		float v = Input.GetAxis("Vertical");
 		float h = Input.GetAxis("Horizontal");
 
+		inputUpdated = false;
+
 		this.VerticalVelocity = Character_Motor.Instance.MoveVector.y;
 		Character_Motor.Instance.MoveVector = Vector3.zero;
 		//change how the input is fetched to deal with "normal" 
 		if (v > deadZone || v < -deadZone) {
 			Character_Motor.Instance.MoveVector.y = -v;
+			inputUpdated = true;
 		}
 		if (h > deadZone || h < -deadZone) {
 			Character_Motor.Instance.MoveVector.x = h;
+			inputUpdated = true;
 		}
 	}
 
