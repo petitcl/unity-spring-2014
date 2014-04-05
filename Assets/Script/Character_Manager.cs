@@ -42,6 +42,7 @@ public class Character_Manager : MonoBehaviour {
 //		if (GetComponent<Camera>() != null) {
 		this.ControllerInput();
 			this.ActionInput();
+			Animation_Manager.Instance.CurrentMotionState();
 			Character_Motor.Instance.ControlledUpdate();
 //		}
 	}
