@@ -16,10 +16,10 @@ public class Camera_Manager : MonoBehaviour {
 
 
 	public float MouseX;
-	public float MouseXVelocity;
 	public float MouseY;
 	public float MouseYVelocity;
 	public float MouseSens = 5.0f;
+	Vector3 AxisVelocity;
 	public float MouseWheel;
 	public float OldMouseWheel;
 
@@ -30,20 +30,12 @@ public class Camera_Manager : MonoBehaviour {
 	}
 
 	private void Start() {
-		Vector3 v = Camera.main.transform.position - this.TargetLookAt.transform.position;
-
-		//special case: targetLookAt and camera are in the same position
-		if (v == Vector3.zero) {
-			v = Vector3.up * this.MinDist;
-		}
-		float dist = Mathf.Clamp(v.magnitude, this.MinDist, this.MaxDist); //resize vector between targetLooktAndCamer
-		v = v.normalized * dist;
-		this.InitialCameraPosition(this.TargetLookAt.transform.position + v);
+		this.InitialCameraPosition();
 	}
 
-	private void InitialCameraPosition(Vector3 newPos){
-		Camera.main.transform.position = newPos;
+	private void InitialCameraPosition(){
 		this.MouseWheel = 10.0f;
+		SmoothCameraPosition();
 	}
 
 	private	void LateUpdate() {
@@ -53,27 +45,20 @@ public class Camera_Manager : MonoBehaviour {
 	private	void VerifyUserMouseInput() {
 		//if right button pressed, do nothing (DEBUG)
 		if (Input.GetButton("Fire2")) {
-			return;
+			this.MouseX += Input.GetAxis("Mouse X") * this.MouseSens;
+			this.MouseY += -Input.GetAxis("Mouse Y") * this.MouseSens;
+			this.MouseY = Helper.CameraClamp(this.MouseY, -10, 80);
 		}
-		this.MouseX += Input.GetAxis("Mouse X") * this.MouseSens;
-		this.MouseY += Input.GetAxis("Mouse Y") * this.MouseSens;
 		this.MouseWheel += Input.GetAxis("Mouse ScrollWheel") * this.MouseWheelSpeed;
 		//Clamp mouseY
-		this.MouseY = Helper.CameraClamp(this.MouseY, -50, 80);
 		SmoothCameraPosition();
-
 	}
 
 	public void SmoothCameraPosition() {
-//		float newMouseY =  Mathf.SmoothDamp (this.MouseY, mouseY, ref this.MouseYVelocity,0.3f);
-//		this.MouseY = newMouseY;
-//
-//		float newMouseX =  Mathf.SmoothDamp (this.MouseX, mouseX, ref this.MouseXVelocity,0.3f);
-//		this.MouseX = newMouseX;
+		this.MouseWheel = Mathf.Clamp(this.MouseWheel, this.MinDist, this.MaxDist);
 
-		float clampedMouseWheel = Mathf.Clamp(this.MouseWheel, this.MinDist, this.MaxDist);
-
-		float newMouseWheel = Mathf.SmoothDamp(this.OldMouseWheel, clampedMouseWheel, ref this.MouseWheelVelocity, 0.3f);
+//		float newMouseWheel= clampedMouseWheel;
+		float newMouseWheel = Mathf.SmoothDamp(this.OldMouseWheel, this.MouseWheel, ref this.MouseWheelVelocity, 0.3f);
 		this.OldMouseWheel = newMouseWheel;
 		Vector3 positionVector = this.CreatePositionVector(this.MouseX, this.MouseY, newMouseWheel);
 		Vector3 smoothedPosition = this.SmoothCameraAxis(positionVector);
@@ -81,8 +66,9 @@ public class Camera_Manager : MonoBehaviour {
 	}
 
 	public Vector3	SmoothCameraAxis(Vector3 desiredPosition) {
-		Vector3 smoothedPosition = Vector3.up;
-		return desiredPosition;
+		Vector3 smoothedPosition;
+		smoothedPosition = Vector3.SmoothDamp(transform.position, desiredPosition, ref this.AxisVelocity, 0.3f);
+		return smoothedPosition;
 	}
 
 	public Vector3 CreatePositionVector(float mouseX, float mouseY, float dist) {
