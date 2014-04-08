@@ -47,17 +47,18 @@ public class Camera_Manager : MonoBehaviour {
 		if (Input.GetButton("Fire2")) {
 			this.MouseX += Input.GetAxis("Mouse X") * this.MouseSens;
 			this.MouseY += -Input.GetAxis("Mouse Y") * this.MouseSens;
-			this.MouseWheel += Input.GetAxis("Mouse ScrollWheel") * this.MouseWheelSpeed;
 			this.MouseY = Helper.CameraClamp(this.MouseY, -10, 80);
 		}
+		this.MouseWheel += Input.GetAxis("Mouse ScrollWheel") * this.MouseWheelSpeed;
 		//Clamp mouseY
 		SmoothCameraPosition();
 	}
 
 	public void SmoothCameraPosition() {
-		float clampedMouseWheel = Mathf.Clamp(this.MouseWheel, this.MinDist, this.MaxDist);
+		this.MouseWheel = Mathf.Clamp(this.MouseWheel, this.MinDist, this.MaxDist);
 
-		float newMouseWheel = Mathf.SmoothDamp(this.OldMouseWheel, clampedMouseWheel, ref this.MouseWheelVelocity, 0.3f);
+//		float newMouseWheel= clampedMouseWheel;
+		float newMouseWheel = Mathf.SmoothDamp(this.OldMouseWheel, this.MouseWheel, ref this.MouseWheelVelocity, 0.3f);
 		this.OldMouseWheel = newMouseWheel;
 		Vector3 positionVector = this.CreatePositionVector(this.MouseX, this.MouseY, newMouseWheel);
 		Vector3 smoothedPosition = this.SmoothCameraAxis(positionVector);

@@ -12,7 +12,10 @@ public class Character_Motor : MonoBehaviour {
 	//Max gravity velocity
 	public float TerminalVelocity = 10f;
 
-	public float maxSpeed = 1f;
+	public float	ForwardSpeedLimit = 10f;
+	public float	BackwardSpeedLimit = 4f;
+	public float	StrafingSpeedLimit = 12f;
+	public float	SlidingSpeedLimit = 10f;
 
 	public float JumpImpulse = 10f;
 
@@ -43,7 +46,7 @@ public class Character_Motor : MonoBehaviour {
 		if (this.MoveVector.magnitude > 1) {
 			this.MoveVector.Normalize();
 		}
-		this.MoveVector *= this.maxSpeed * Time.deltaTime;
+		this.MoveVector *= this.SpeedLimit() * Time.deltaTime;
 		this.MoveVector.y = Character_Manager.Instance.VerticalVelocity;
 
 		this.Slide();
@@ -53,7 +56,6 @@ public class Character_Motor : MonoBehaviour {
 
 	private void Slide() {
 		if (!Character_Manager.CharacterControllerComponent.isGrounded) {
-			Debug.Log("goodbye!");
 			return;
 		}
 		this.SlideVector = Vector3.zero;
@@ -61,10 +63,8 @@ public class Character_Motor : MonoBehaviour {
 		if (!Physics.Raycast(this.transform.position + Vector3.up,
 		                    Vector3.down,
 		                    out hit)) {
-			Debug.Log("goodbye! nothing to do");
 			return;
 		}
-		//Debug.Log(hit.normal);
 		this.SlideVector = hit.normal.normalized;
 //		Vector3 hitNormal = hit.normal;
 //
@@ -72,15 +72,49 @@ public class Character_Motor : MonoBehaviour {
 //		Vector3.OrthoNormalize (hitNormal, moveDirection);
 
 		float mag = this.SlideVector.y;
-		this.SlideVector.y = 0;
-		Debug.Log(mag);
+//		this.SlideVector.y = 0;
+		Vector3 realSlideVector = new Vector3(this.SlideVector.x, 0.0f, this.SlideVector.z);
 		if (hit.normal.y < 0.9f) {
 			if (mag < 0.7f) {
-				this.MoveVector = this.SlideVector * 10.0f * Time.deltaTime;
+				this.MoveVector = realSlideVector * this.SpeedLimit() * Time.deltaTime;
 			} else {
-				this.MoveVector += this.SlideVector * 10.0f * Time.deltaTime;
+				this.MoveVector += realSlideVector * this.SpeedLimit() * Time.deltaTime;
 			}
 		}
+	}
+
+	private float SpeedLimit() {
+		switch (Animation_Manager.Instance.CharacterMotionState) {
+		case Animation_Manager.MotionStateList.Backward:
+			return BackwardSpeedLimit;
+		case Animation_Manager.MotionStateList.LeftBackward:
+			return BackwardSpeedLimit;
+		case Animation_Manager.MotionStateList.RightBackward:
+			return BackwardSpeedLimit;
+
+		case Animation_Manager.MotionStateList.Forward:
+			return ForwardSpeedLimit;
+		case Animation_Manager.MotionStateList.LeftForward:
+			return ForwardSpeedLimit;
+		case Animation_Manager.MotionStateList.RightForward:
+			return ForwardSpeedLimit;
+
+		case Animation_Manager.MotionStateList.Left:
+			return StrafingSpeedLimit;
+		case Animation_Manager.MotionStateList.Right:
+			return StrafingSpeedLimit;
+
+		default:
+			if (this.IsSliding()) {
+				return this.SlidingSpeedLimit;
+			} else {
+				return 0.0f;
+			}
+		}
+	}
+
+	private bool IsSliding() {
+		return (this.SlideVector.y > 0.0f);
 	}
 
 	private void ApplyGravity() {
