@@ -62,6 +62,7 @@ public class Camera_Manager : MonoBehaviour {
 		this.OldMouseWheel = newMouseWheel;
 		Vector3 positionVector = this.CreatePositionVector(this.MouseX, this.MouseY, newMouseWheel);
 		Vector3 smoothedPosition = this.SmoothCameraAxis(positionVector);
+		this.CameraCollisionPointsCheck (this.TargetLookAt.transform.position, smoothedPosition);
 		this.ApplyCameraPosition(smoothedPosition);
 	}
 
@@ -107,5 +108,23 @@ public class Camera_Manager : MonoBehaviour {
 		Camera_Manager.Instance.TargetLookAt = tmpTarget;
 	}
 	
+	public void CameraCollisionPointsCheck(Vector3 targetLookAtPosition, Vector3 cameraPositionAfterSmoothing)
+	{
+		Vector3 nearClipPlanePosition = (cameraPositionAfterSmoothing - targetLookAtPosition).normalized * Camera.main.nearClipPlane;
+		Vector3 cameraBackBuffer = cameraPositionAfterSmoothing + nearClipPlanePosition;
+		Helper.ClipPlaneStruct nearPlane = Helper.FindNearClipPlanePositions ();
 
+		Debug.DrawLine(cameraBackBuffer, targetLookAtPosition, Color.red);
+		
+		Debug.DrawLine (nearPlane.LowerLeft, nearPlane.LowerRight, Color.white);
+		Debug.DrawLine (nearPlane.LowerRight, nearPlane.UpperRight, Color.white);
+		Debug.DrawLine (nearPlane.UpperRight, nearPlane.UpperLeft, Color.white);
+		Debug.DrawLine (nearPlane.UpperLeft, nearPlane.LowerLeft, Color.white);
+		
+		Debug.DrawLine (nearPlane.LowerLeft, targetLookAtPosition, Color.white);
+		Debug.DrawLine (nearPlane.LowerRight, targetLookAtPosition, Color.white);
+		Debug.DrawLine (nearPlane.UpperRight, targetLookAtPosition, Color.white);
+		Debug.DrawLine (nearPlane.UpperLeft, targetLookAtPosition, Color.white);
+
+	}
 }
