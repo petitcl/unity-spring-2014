@@ -14,7 +14,6 @@ public class Camera_Manager : MonoBehaviour {
 	public float MouseWheelVelocity;
 	public float MouseWheelSpeed = 10.0f;
 
-
 	public float MouseX;
 	public float MouseY;
 	public float MouseYVelocity;
@@ -35,7 +34,7 @@ public class Camera_Manager : MonoBehaviour {
 
 	private void InitialCameraPosition(){
 		this.MouseWheel = 10.0f;
-		SmoothCameraPosition();
+		this.SmoothCameraPosition();
 	}
 
 	private	void LateUpdate() {
@@ -51,7 +50,7 @@ public class Camera_Manager : MonoBehaviour {
 		}
 		this.MouseWheel += Input.GetAxis("Mouse ScrollWheel") * this.MouseWheelSpeed;
 		//Clamp mouseY
-		SmoothCameraPosition();
+		this.SmoothCameraPosition();
 	}
 
 	public void SmoothCameraPosition() {
@@ -61,8 +60,11 @@ public class Camera_Manager : MonoBehaviour {
 		float newMouseWheel = Mathf.SmoothDamp(this.OldMouseWheel, this.MouseWheel, ref this.MouseWheelVelocity, 0.3f);
 		this.OldMouseWheel = newMouseWheel;
 		Vector3 positionVector = this.CreatePositionVector(this.MouseX, this.MouseY, newMouseWheel);
+		float	safeMouseWheel = this.CameraCollisionPointsCheck(this.TargetLookAt.transform.position, positionVector);
+		if (safeMouseWheel > 0.0f) {
+			this.MouseWheel = safeMouseWheel;
+		}
 		Vector3 smoothedPosition = this.SmoothCameraAxis(positionVector);
-		this.CameraCollisionPointsCheck (this.TargetLookAt.transform.position, smoothedPosition);
 		this.ApplyCameraPosition(smoothedPosition);
 	}
 
@@ -108,8 +110,8 @@ public class Camera_Manager : MonoBehaviour {
 		Camera_Manager.Instance.TargetLookAt = tmpTarget;
 	}
 	
-	public void CameraCollisionPointsCheck(Vector3 targetLookAtPosition, Vector3 cameraPositionAfterSmoothing)
-	{
+	public float CameraCollisionPointsCheck(Vector3 targetLookAtPosition, Vector3 cameraPositionAfterSmoothing) {
+		float newDistance = -1.0f;
 		Vector3 nearClipPlanePosition = (cameraPositionAfterSmoothing - targetLookAtPosition).normalized * Camera.main.nearClipPlane;
 		Vector3 cameraBackBuffer = cameraPositionAfterSmoothing + nearClipPlanePosition;
 		Helper.ClipPlaneStruct nearPlane = Helper.FindNearClipPlanePositions ();
@@ -126,5 +128,12 @@ public class Camera_Manager : MonoBehaviour {
 		Debug.DrawLine (nearPlane.UpperRight, targetLookAtPosition, Color.white);
 		Debug.DrawLine (nearPlane.UpperLeft, targetLookAtPosition, Color.white);
 
+		RaycastHit hitInfo;
+		if (Physics.Linecast(targetLookAtPosition, cameraBackBuffer, out hitInfo)) {
+			if (hitInfo.collider.tag != "Player") {
+				newDistance = hitInfo.distance;
+			}
+		}
+		return newDistance;
 	}
 }
