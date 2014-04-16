@@ -14,7 +14,6 @@ public class Camera_Manager : MonoBehaviour {
 	public float MouseWheelVelocity;
 	public float MouseWheelSpeed = 10.0f;
 
-
 	public float MouseX;
 	public float MouseY;
 	public float MouseYVelocity;
@@ -22,8 +21,16 @@ public class Camera_Manager : MonoBehaviour {
 	Vector3 AxisVelocity;
 	public float MouseWheel;
 	public float OldMouseWheel;
+	public int	MaxCameraChecks = 5;
+	public float CameraCheckStep = 0.3f;
+	public	float	UnobstructedSmoothTime = 0.3f;
+	public	float	ObstructedSmoothTime = 2.0f;
 
 	private Vector2 InitialMouseAxis;
+	private	float	ClosestDitanceToCharacter = 0.0f;
+	private	float	SmoothTimeSwitch;
+	private	float	CameraDistanceBeforeObstruction;
+	private	Vector3	CameraPositionBeforeObstruction;
 
 	private void Awake() {
 		Instance = this;
@@ -35,11 +42,18 @@ public class Camera_Manager : MonoBehaviour {
 
 	private void InitialCameraPosition(){
 		this.MouseWheel = 10.0f;
-		SmoothCameraPosition();
+		this.SmoothCameraPosition();
+		this.SmoothTimeSwitch = this.UnobstructedSmoothTime;
+		this.CameraDistanceBeforeObstruction = this.MouseWheel;
 	}
 
 	private	void LateUpdate() {
 		this.VerifyUserMouseInput();
+
+		int cameraCheckCount = 0;
+		while (this.ObstructedCameraCheck(cameraCheckCount)) {
+			++cameraCheckCount;
+		}
 	}
 
 	private	void VerifyUserMouseInput() {
@@ -49,26 +63,35 @@ public class Camera_Manager : MonoBehaviour {
 			this.MouseY += -Input.GetAxis("Mouse Y") * this.MouseSens;
 			this.MouseY = Helper.CameraClamp(this.MouseY, -10, 80);
 		}
-		this.MouseWheel += Input.GetAxis("Mouse ScrollWheel") * this.MouseWheelSpeed;
+		float	tmpScrollWheel = Input.GetAxis("Mouse ScrollWheel") * this.MouseWheelSpeed;
+		this.MouseWheel += tmpScrollWheel;
 		//Clamp mouseY
-		SmoothCameraPosition();
+		if (tmpScrollWheel != 0.0f) {
+			this.CameraDistanceBeforeObstruction = this.MouseWheel;
+			this.SmoothTimeSwitch = this.UnobstructedSmoothTime;
+		}
+		this.SmoothCameraPosition();
 	}
 
 	public void SmoothCameraPosition() {
+		this.EvaluateCameraDistanceBeforeObstruction();
 		this.MouseWheel = Mathf.Clamp(this.MouseWheel, this.MinDist, this.MaxDist);
-
-//		float newMouseWheel= clampedMouseWheel;
-		float newMouseWheel = Mathf.SmoothDamp(this.OldMouseWheel, this.MouseWheel, ref this.MouseWheelVelocity, 0.3f);
+		float newMouseWheel = Mathf.SmoothDamp(this.OldMouseWheel, this.MouseWheel, ref this.MouseWheelVelocity, this.SmoothTimeSwitch);
+		//Handle Obstruction
+		//If distance back to original
+		Debug.Log("Delta:" + (this.CameraDistanceBeforeObstruction - newMouseWheel));
+		if (Mathf.Abs(this.CameraDistanceBeforeObstruction - newMouseWheel) < 1.0f) {
+			this.SmoothTimeSwitch = this.UnobstructedSmoothTime;
+		}
 		this.OldMouseWheel = newMouseWheel;
 		Vector3 positionVector = this.CreatePositionVector(this.MouseX, this.MouseY, newMouseWheel);
 		Vector3 smoothedPosition = this.SmoothCameraAxis(positionVector);
-		this.CameraCollisionPointsCheck (this.TargetLookAt.transform.position, smoothedPosition);
 		this.ApplyCameraPosition(smoothedPosition);
 	}
 
 	public Vector3	SmoothCameraAxis(Vector3 desiredPosition) {
 		Vector3 smoothedPosition;
-		smoothedPosition = Vector3.SmoothDamp(transform.position, desiredPosition, ref this.AxisVelocity, 0.3f);
+		smoothedPosition = Vector3.SmoothDamp(transform.position, desiredPosition, ref this.AxisVelocity, this.SmoothTimeSwitch);
 		return smoothedPosition;
 	}
 
@@ -107,9 +130,32 @@ public class Camera_Manager : MonoBehaviour {
 		}
 		Camera_Manager.Instance.TargetLookAt = tmpTarget;
 	}
-	
-	public void CameraCollisionPointsCheck(Vector3 targetLookAtPosition, Vector3 cameraPositionAfterSmoothing)
-	{
+
+	private	void EvaluateCameraDistanceBeforeObstruction() {
+		if (this.MouseWheel < this.CameraDistanceBeforeObstruction) {
+			this.CameraPositionBeforeObstruction = 
+				this.CreatePositionVector(this.MouseX, this.MouseY, this.CameraDistanceBeforeObstruction);
+			float newDist = this.CameraCollisionPointsCheck(this.TargetLookAt.transform.position, this.CameraPositionBeforeObstruction);
+			if (newDist == -1.0f) {
+				this.MouseWheel = this.CameraDistanceBeforeObstruction;
+			}
+		}
+	}
+
+	private void CollisionPointCheck(Vector3 start, Vector3 end, ref float newDistance) {
+		RaycastHit hitInfo;
+		
+		if (Physics.Linecast(start, end, out hitInfo)) {
+			if (hitInfo.collider.tag != "Player") {
+				if (newDistance == -1.0f || newDistance > hitInfo.distance) {
+					newDistance = hitInfo.distance;
+				}
+			}
+		}
+	}
+
+	public float CameraCollisionPointsCheck(Vector3 targetLookAtPosition, Vector3 cameraPositionAfterSmoothing) {
+		float newDistance = -1.0f;
 		Vector3 nearClipPlanePosition = (cameraPositionAfterSmoothing - targetLookAtPosition).normalized * Camera.main.nearClipPlane;
 		Vector3 cameraBackBuffer = cameraPositionAfterSmoothing + nearClipPlanePosition;
 		Helper.ClipPlaneStruct nearPlane = Helper.FindNearClipPlanePositions ();
@@ -126,5 +172,31 @@ public class Camera_Manager : MonoBehaviour {
 		Debug.DrawLine (nearPlane.UpperRight, targetLookAtPosition, Color.white);
 		Debug.DrawLine (nearPlane.UpperLeft, targetLookAtPosition, Color.white);
 
+		this.CollisionPointCheck(targetLookAtPosition, cameraBackBuffer, ref newDistance);
+		this.CollisionPointCheck(targetLookAtPosition, nearPlane.LowerRight, ref newDistance);
+		this.CollisionPointCheck(targetLookAtPosition, nearPlane.UpperRight, ref newDistance);
+		this.CollisionPointCheck(targetLookAtPosition, nearPlane.UpperLeft, ref newDistance);
+		this.CollisionPointCheck(targetLookAtPosition, nearPlane.LowerLeft, ref newDistance);
+
+		return newDistance;
+	}
+
+	public	bool ObstructedCameraCheck(int cameraCheckCount) {
+		if (cameraCheckCount < this.MaxCameraChecks) {
+			bool cameraObstructionBool = false;
+			this.ClosestDitanceToCharacter = this.CameraCollisionPointsCheck(this.TargetLookAt.transform.position, Camera.main.transform.position);
+			cameraObstructionBool = (this.ClosestDitanceToCharacter != -1.0f);
+			if (cameraObstructionBool) {
+				this.SmoothTimeSwitch = this.ObstructedSmoothTime;
+				this.MouseWheel -= this.CameraCheckStep;
+				SmoothCameraPosition();
+			}
+			return (cameraObstructionBool);
+		} else {
+			this.SmoothTimeSwitch = this.ObstructedSmoothTime;
+			this.MouseWheel = this.ClosestDitanceToCharacter + Camera.main.nearClipPlane;
+			SmoothCameraPosition();
+			return false;
+		}
 	}
 }
