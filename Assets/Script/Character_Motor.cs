@@ -39,6 +39,7 @@ public class Character_Motor : MonoBehaviour {
 		lookAt.y = 0;
 		Quaternion lookAtRotation = Quaternion.LookRotation(lookAt);
 		this.gameObject.transform.rotation = lookAtRotation * MODEL_3DSMAX;
+//		this.gameObject.transform.rotation = lookAtRotation;
 	}
 
 	private void ProcessMotion() {

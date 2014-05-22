@@ -79,7 +79,7 @@ public class Camera_Manager : MonoBehaviour {
 		float newMouseWheel = Mathf.SmoothDamp(this.OldMouseWheel, this.MouseWheel, ref this.MouseWheelVelocity, this.SmoothTimeSwitch);
 		//Handle Obstruction
 		//If distance back to original
-		Debug.Log("Delta:" + (this.CameraDistanceBeforeObstruction - newMouseWheel));
+//		Debug.Log("Delta:" + (this.CameraDistanceBeforeObstruction - newMouseWheel));
 		if (Mathf.Abs(this.CameraDistanceBeforeObstruction - newMouseWheel) < 1.0f) {
 			this.SmoothTimeSwitch = this.UnobstructedSmoothTime;
 		}

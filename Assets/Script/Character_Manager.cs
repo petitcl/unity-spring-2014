@@ -39,12 +39,16 @@ public class Character_Manager : MonoBehaviour {
 	
 	// Update is called once per frame
 	private void Update() {
-//		if (GetComponent<Camera>() != null) {
+
 		this.ControllerInput();
-			this.ActionInput();
-			Animation_Manager.Instance.CurrentMotionState();
-			Character_Motor.Instance.ControlledUpdate();
-//		}
+		this.ActionInput();
+
+		Animation_Manager.Instance.CurrentMotionState();
+		Animation_Manager.Instance.CurrentAnimationState();
+		Animation_Manager.Instance.ProcessAnimationState();
+
+		Character_Motor.Instance.ControlledUpdate();
+
 	}
 
 	private void ControllerInput() {

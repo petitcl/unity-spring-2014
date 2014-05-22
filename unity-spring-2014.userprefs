@@ -1,8 +1,10 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Script\Character_Motor.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Script\Animation_Manager.cs">
     <Files>
-      <File FileName="Assets\Script\Character_Motor.cs" Line="76" Column="100" />
+      <File FileName="Assets\Script\Character_Manager.cs" Line="51" Column="3" />
+      <File FileName="Assets\Script\Animation_Manager.cs" Line="56" Column="102" />
+      <File FileName="Assets\Script\Character_Motor.cs" Line="42" Column="57" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
