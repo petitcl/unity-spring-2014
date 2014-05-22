@@ -16,6 +16,8 @@ public class Character_Manager : MonoBehaviour {
 
 	private bool inputUpdated;
 
+	public bool handle3DSmax = true;
+
 	public bool InputUpdated {
 		get {
 			return inputUpdated;
@@ -61,7 +63,11 @@ public class Character_Manager : MonoBehaviour {
 		Character_Motor.Instance.MoveVector = Vector3.zero;
 		//change how the input is fetched to deal with "normal" 
 		if (v > deadZone || v < -deadZone) {
-			Character_Motor.Instance.MoveVector.y = -v;
+			if (handle3DSmax) {
+				Character_Motor.Instance.MoveVector.y = -v;
+			} else {
+				Character_Motor.Instance.MoveVector.z = v;
+			}
 			inputUpdated = true;
 		}
 		if (h > deadZone || h < -deadZone) {
