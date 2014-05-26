@@ -65,10 +65,18 @@ public class Animation_Manager : MonoBehaviour {
 		this.Backward = false;
 
 		Vector3 moveVector = Character_Motor.Instance.MoveVector;
-		if (moveVector.y < 0) {
-			this.Forward = true;
-		} else if (moveVector.y > 0) {
-			this.Backward = true;
+		if (Character_Manager.Instance.handle3DSmax) {
+			if (moveVector.y < 0) {
+				this.Forward = true;
+			} else if (moveVector.y > 0) {
+				this.Backward = true;
+			}
+		} else {
+			if (moveVector.z > 0) {
+				this.Forward = true;
+			} else if (moveVector.z < 0) {
+				this.Backward = true;
+			}
 		}
 	
 		if (moveVector.x > 0) {
