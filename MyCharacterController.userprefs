@@ -1,8 +1,9 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Script\Camera_Manager.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Script\Animation_Manager.cs">
     <Files>
-      <File FileName="Assets\Script\Camera_Manager.cs" Line="73" Column="38" />
+      <File FileName="Assets\Script\Animation_Manager.cs" Line="65" Column="25" />
+      <File FileName="Assets\Script\Character_Manager.cs" Line="67" Column="43" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

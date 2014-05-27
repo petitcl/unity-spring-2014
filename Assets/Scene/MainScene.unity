@@ -620,7 +620,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 11100000, guid: 91f32b3eb7a9f9149b3873a7976d6763, type: 3}
       propertyPath: m_Animations.Array.size
-      value: 7
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 400122, guid: 91f32b3eb7a9f9149b3873a7976d6763, type: 3}
       propertyPath: m_LocalPosition.x
@@ -686,6 +686,10 @@ Prefab:
       propertyPath: m_Animations.Array.data[6]
       value: 
       objectReference: {fileID: 7400000, guid: e50a52cca467ce84a975c257695dfe3d, type: 3}
+    - target: {fileID: 11100000, guid: 91f32b3eb7a9f9149b3873a7976d6763, type: 3}
+      propertyPath: m_Animations.Array.data[7]
+      value: 
+      objectReference: {fileID: 7400000, guid: 93889a8d768a7d94a9a14ce451414ff7, type: 3}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 91f32b3eb7a9f9149b3873a7976d6763, type: 3}
   m_RootGameObject: {fileID: 1242192543}
@@ -1549,6 +1553,7 @@ MonoBehaviour:
   deadZone: 0
   Gravity: -1
   VerticalVelocity: 0
+  handle3DSmax: 1
 --- !u!95 &921807592
 Animator:
   serializedVersion: 2
@@ -2203,6 +2208,7 @@ MonoBehaviour:
   deadZone: .00999999978
   Gravity: -1
   VerticalVelocity: 0
+  handle3DSmax: 0
 --- !u!143 &1242192548
 CharacterController:
   m_ObjectHideFlags: 0
@@ -2235,6 +2241,7 @@ Animation:
   - {fileID: 7400000, guid: 9a1c2cb6ee6ea9c4d8ff362014c65732, type: 3}
   - {fileID: 7400000, guid: 019cc79ed29736b4da3c475e57df8dad, type: 3}
   - {fileID: 7400000, guid: e50a52cca467ce84a975c257695dfe3d, type: 3}
+  - {fileID: 7400000, guid: 93889a8d768a7d94a9a14ce451414ff7, type: 3}
   m_WrapMode: 0
   m_PlayAutomatically: 1
   m_AnimatePhysics: 0

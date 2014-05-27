@@ -19,6 +19,19 @@ public class Character_Motor : MonoBehaviour {
 
 	public float JumpImpulse = 10f;
 
+	private bool	_isSliding;
+	public bool	IsSliding {
+		get {
+			return this._isSliding;
+		}
+		set {
+			if (!this._isSliding && value) {
+				Animation_Manager.Instance.FireSlideAnimationState();
+			}
+			this._isSliding = value;
+		}
+	}
+
 	public static Quaternion MODEL_3DSMAX = Quaternion.Euler(-90, 0, 0);
 
 	// Use this for initialization
@@ -79,11 +92,14 @@ public class Character_Motor : MonoBehaviour {
 //		this.SlideVector.y = 0;
 		Vector3 realSlideVector = new Vector3(this.SlideVector.x, 0.0f, this.SlideVector.z);
 		if (hit.normal.y < 0.9f) {
+			this.IsSliding = true;
 			if (mag < 0.7f) {
 				this.MoveVector = realSlideVector * this.SpeedLimit() * Time.deltaTime;
 			} else {
 				this.MoveVector += realSlideVector * this.SpeedLimit() * Time.deltaTime;
 			}
+		} else {
+			this.IsSliding = false;
 		}
 	}
 
@@ -109,7 +125,7 @@ public class Character_Motor : MonoBehaviour {
 			return StrafingSpeedLimit;
 
 		default:
-			if (this.IsSliding()) {
+			if (this.IsSliding) {
 				return this.SlidingSpeedLimit;
 			} else {
 				return 0.0f;
@@ -117,9 +133,9 @@ public class Character_Motor : MonoBehaviour {
 		}
 	}
 
-	private bool IsSliding() {
-		return (this.SlideVector.y > 0.0f);
-	}
+//	private bool IsSliding() {
+//		return (this.SlideVector.y > 0.0f);
+//	}
 
 	private void ApplyGravity() {
 		if (!Character_Manager.CharacterControllerComponent.isGrounded) {
