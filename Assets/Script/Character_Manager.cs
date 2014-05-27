@@ -77,8 +77,11 @@ public class Character_Manager : MonoBehaviour {
 	}
 
 	private void ActionInput() {
-		if (Input.GetButton("Jump")) {
+		if (Input.GetButtonDown("Jump")) {
 			this.DelegateJump();
+		}
+		if (Input.GetKeyDown(KeyCode.F)) {
+			this.DelegateUse();
 		}
 	}
 
@@ -88,6 +91,10 @@ public class Character_Manager : MonoBehaviour {
 
 	private void DelegateJump() {
 		Character_Motor.Instance.Jump();
+	}
+
+	private void DelegateUse() {
+		Animation_Manager.Instance.FireUseAnimationState();
 	}
 
 

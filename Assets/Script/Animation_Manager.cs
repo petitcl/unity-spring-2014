@@ -26,8 +26,17 @@ public class Animation_Manager : MonoBehaviour {
 		StrafeRunLeft,
 		StrafeRunRight,
 		StrafeBackLeft,
-		StrafeBackRight
+		StrafeBackRight,
+		Use,
+		Slide,
+		Jump,
+		Fall,
+		Land,
+		Climb,
+		Dead,
+		StateLocked
 	}
+			
 
 	public	delegate void	AfterAnimationStateAction();
 
@@ -54,9 +63,23 @@ public class Animation_Manager : MonoBehaviour {
 		this.AfterAnimationActions[AnimationStateList.StrafeRunRight] = this.AnimationAfterStrafeRunRightState;
 		this.AfterAnimationActions[AnimationStateList.StrafeBackLeft] = this.AnimationAfterStrafeBackLeftState;
 		this.AfterAnimationActions[AnimationStateList.StrafeBackRight] = this.AnimationAfterStrafeBackRightState;
+		this.AfterAnimationActions[AnimationStateList.Use] = this.AnimationAfterUseState;
+		this.AfterAnimationActions[AnimationStateList.Slide] = this.AnimationAfterSlideState;
 
 	}
-		
+
+	public void	FireSlideAnimationState() {
+		this.CharacterAnimationState = AnimationStateList.Slide;
+		animation.CrossFade("RunBackwards");
+	}
+
+	public void	FireUseAnimationState() {
+		this.CharacterAnimationState = AnimationStateList.Use;
+//		animation.CrossFade("Use");
+		animation.CrossFade("RunJump");
+		this.AnimationAfterUseState();
+	}
+
 	public void CurrentMotionState() {
 
 		this.Left = false;
@@ -117,6 +140,17 @@ public class Animation_Manager : MonoBehaviour {
 		//check if player is dead
 		//check if jumping/falling/landing
 		//check if action (ie: using/climbing)
+		
+		switch (this.CharacterAnimationState) {
+		case AnimationStateList.Use:
+			return;
+			break;
+		case AnimationStateList.Slide:
+			return;
+			break;
+		default:
+			break;
+		}
 
 		switch (this.CharacterMotionState) {
 		case MotionStateList.Stationary:
@@ -181,6 +215,22 @@ public class Animation_Manager : MonoBehaviour {
 	}
 	public	void	AnimationAfterStrafeBackRightState() {
 		animation.CrossFade("StrafeBackRight");
+	}
+	public	void	AnimationAfterUseState() {
+		if (!animation.isPlaying) {
+			this.CharacterAnimationState = AnimationStateList.Idle; 
+			animation.CrossFade("Idle");
+		} else {
+			animation.CrossFade("RunJump");
+		}
+	}
+	public	void	AnimationAfterSlideState() {
+		if (!Character_Motor.Instance.IsSliding) {
+			this.CharacterAnimationState = AnimationStateList.Idle;
+			animation.CrossFade("Idle");
+		} else {
+			animation.CrossFade("RunBackwards");
+		}
 	}
 
 }
