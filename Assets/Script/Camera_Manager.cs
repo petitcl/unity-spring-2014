@@ -40,7 +40,7 @@ public class Camera_Manager : MonoBehaviour {
 		this.InitialCameraPosition();
 	}
 
-	private void InitialCameraPosition(){
+	private void InitialCameraPosition() {
 		this.MouseWheel = 10.0f;
 		this.SmoothCameraPosition();
 		this.SmoothTimeSwitch = this.UnobstructedSmoothTime;

@@ -2,9 +2,10 @@
   <MonoDevelop.Ide.Workspace />
   <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Script\Animation_Manager.cs">
     <Files>
-      <File FileName="Assets\Script\Character_Manager.cs" Line="51" Column="3" />
-      <File FileName="Assets\Script\Animation_Manager.cs" Line="56" Column="102" />
-      <File FileName="Assets\Script\Character_Motor.cs" Line="42" Column="57" />
+      <File FileName="Assets\Script\Animation_Manager.cs" Line="141" Column="4" />
+      <File FileName="Assets\Script\Climb_Volume_Manager.cs" Line="14" Column="56" />
+      <File FileName="Assets\Script\Character_Manager.cs" Line="109" Column="8" />
+      <File FileName="Assets\Script\Camera_Manager.cs" Line="44" Column="27" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

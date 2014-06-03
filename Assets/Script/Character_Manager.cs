@@ -24,6 +24,10 @@ public class Character_Manager : MonoBehaviour {
 		}
 	}
 
+	public bool	isClimbing {
+		get; set;
+	}
+
 	// Use this for initialization
 	private void Start() {
 	
@@ -78,7 +82,11 @@ public class Character_Manager : MonoBehaviour {
 
 	private void ActionInput() {
 		if (Input.GetButtonDown("Jump")) {
-			this.DelegateJump();
+			if (this.isClimbing) {
+				this.DelegateClimb();
+			} else {
+				this.DelegateJump();
+			}
 		}
 		if (Input.GetKeyDown(KeyCode.F)) {
 			this.DelegateUse();
@@ -89,12 +97,16 @@ public class Character_Manager : MonoBehaviour {
 		return Input.GetButton("Jump");
 	}
 
-	private void DelegateJump() {
+	public void DelegateJump() {
 		Character_Motor.Instance.Jump();
 		Animation_Manager.Instance.FireJumpAnimationState();
 	}
 
-	private void DelegateUse() {
+	public void DelegateClimb() {
+		Animation_Manager.Instance.FireClimbAnimationState();
+	}
+
+	public void DelegateUse() {
 		Animation_Manager.Instance.FireUseAnimationState();
 	}
 

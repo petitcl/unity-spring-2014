@@ -66,6 +66,8 @@ public class Animation_Manager : MonoBehaviour {
 
 	private	Dictionary<AnimationStateList, AfterAnimationStateAction>	AfterAnimationActions;
 
+	private	Transform climbVolumeTransform;
+
 	private void Awake() {
 		Instance = this;
 		PreviousAnimationState = AnimationStateList.Idle;
@@ -81,8 +83,23 @@ public class Animation_Manager : MonoBehaviour {
 		this.AfterAnimationActions[AnimationStateList.Use] = this.AnimationAfterUseState;
 		this.AfterAnimationActions[AnimationStateList.Slide] = this.AnimationAfterSlideState;
 		this.AfterAnimationActions[AnimationStateList.Jump] = this.AnimationAfterJumpState;
-
+		this.AfterAnimationActions[AnimationStateList.Climb] = this.AnimationAfterClimbState;
 	}
+
+
+	public void	SetClimbVolumeTransform(Transform currentTransform) {
+		this.climbVolumeTransform = currentTransform;
+		Character_Manager.Instance.isClimbing = true;
+	}
+
+	public void	ClearClimbVolumeTransform(Transform currentTransform) {
+		if (this.climbVolumeTransform == currentTransform) {
+			this.climbVolumeTransform = null;
+			Character_Manager.Instance.isClimbing = false;
+		}
+	}
+
+	//Fire animation methods
 	public void FireJumpAnimationState() {
 		Debug.Log(characterIsDead);
 		Debug.Log(CharacterAnimationState);
@@ -109,6 +126,29 @@ public class Animation_Manager : MonoBehaviour {
 		this.AnimationAfterUseState();
 	}
 
+	public void	FireClimbAnimationState() {
+		float	climbRange = 60.0f;
+		if (this.characterIsDead
+		    || CharacterAnimationState == AnimationStateList.Jump 
+		    || !Character_Manager.CharacterControllerComponent.isGrounded) {
+			return;
+		}
+		if (this.climbVolumeTransform == null) {
+			return;
+		}
+		if (climbVolumeTransform.rotation.y < Character_Manager.Instance.transform.rotation.y - climbRange) {
+			Character_Manager.Instance.DelegateJump();
+		}
+//		if (Character_Manager.Instance.transform.rotation.y > this.climbVolumeTransform.y - climbRange
+//		    && Character_Manager.Instance.transform.rotation.y < this.climbVolumeTransform.y + climbRange) {
+//
+//		}
+		this.CharacterAnimationState = AnimationStateList.Climb;
+		this.animation.CrossFade("RunJump");
+	}
+
+
+	//current motion state && current animation state
 	public void CurrentMotionState() {
 
 		this.Left = false;
@@ -171,15 +211,16 @@ public class Animation_Manager : MonoBehaviour {
 		//check if action (ie: using/climbing)
 		
 		switch (this.CharacterAnimationState) {
+		case AnimationStateList.Dead:
+			return;
 		case AnimationStateList.Use:
 			return;
-			break;
 		case AnimationStateList.Slide:
 			return;
-			break;
 		case AnimationStateList.Jump:
 			return;
-			break;
+		case AnimationStateList.Climb:
+			return;
 		default:
 			break;
 		}
@@ -227,6 +268,7 @@ public class Animation_Manager : MonoBehaviour {
 		action();
 	}
 
+	//animation after methods
 	public	void	AnimationAfterIdleState() {
 		animation.CrossFade("Idle");
 	}
@@ -265,6 +307,9 @@ public class Animation_Manager : MonoBehaviour {
 		}
 	}
 	public void AnimationAfterJumpState() {
+		animation.CrossFade("RunJump");
+	}
+	public void AnimationAfterClimbState() {
 		animation.CrossFade("RunJump");
 	}
 
