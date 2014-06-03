@@ -91,6 +91,7 @@ public class Character_Manager : MonoBehaviour {
 
 	private void DelegateJump() {
 		Character_Motor.Instance.Jump();
+		Animation_Manager.Instance.FireJumpAnimationState();
 	}
 
 	private void DelegateUse() {

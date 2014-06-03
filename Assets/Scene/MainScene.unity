@@ -690,6 +690,10 @@ Prefab:
       propertyPath: m_Animations.Array.data[7]
       value: 
       objectReference: {fileID: 7400000, guid: 93889a8d768a7d94a9a14ce451414ff7, type: 3}
+    - target: {fileID: 11100000, guid: 91f32b3eb7a9f9149b3873a7976d6763, type: 3}
+      propertyPath: m_Animations.Array.data[8]
+      value: 
+      objectReference: {fileID: 7400000, guid: 93889a8d768a7d94a9a14ce451414ff7, type: 3}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 91f32b3eb7a9f9149b3873a7976d6763, type: 3}
   m_RootGameObject: {fileID: 1242192543}
@@ -1628,8 +1632,8 @@ MonoBehaviour:
   Right: 0
   Forward: 0
   Backward: 0
+  characterIsDead: 0
   CharacterMotionState: 0
-  CharacterAnimationState: 0
 --- !u!1 &954064053
 GameObject:
   m_ObjectHideFlags: 0
@@ -2173,8 +2177,8 @@ MonoBehaviour:
   Right: 0
   Forward: 0
   Backward: 0
+  characterIsDead: 0
   CharacterMotionState: 0
-  CharacterAnimationState: 0
 --- !u!114 &1242192546
 MonoBehaviour:
   m_ObjectHideFlags: 0
