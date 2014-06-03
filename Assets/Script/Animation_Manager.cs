@@ -44,16 +44,31 @@ public class Animation_Manager : MonoBehaviour {
 	public bool Right = false;
 	public bool Forward = false;
 	public bool Backward = false;
+	public bool characterIsDead = false;
+
+	public AnimationStateList PreviousAnimationState {
+		get; private set;
+	}
 
 	public MotionStateList CharacterMotionState = MotionStateList.Stationary;
-	public AnimationStateList CharacterAnimationState = AnimationStateList.Idle;
+
+	private AnimationStateList _characterAnimationState = AnimationStateList.Idle;
+	public AnimationStateList CharacterAnimationState {
+		get {
+			return _characterAnimationState;
+		}
+		set { 
+			PreviousAnimationState = _characterAnimationState;
+			_characterAnimationState = value;
+		}
+	}
 
 
 	private	Dictionary<AnimationStateList, AfterAnimationStateAction>	AfterAnimationActions;
 
 	private void Awake() {
 		Instance = this;
-
+		PreviousAnimationState = AnimationStateList.Idle;
 		//setup here after animations actions
 		this.AfterAnimationActions = new Dictionary<AnimationStateList, AfterAnimationStateAction>();
 		this.AfterAnimationActions[AnimationStateList.Idle] = this.AnimationAfterIdleState;
@@ -65,7 +80,21 @@ public class Animation_Manager : MonoBehaviour {
 		this.AfterAnimationActions[AnimationStateList.StrafeBackRight] = this.AnimationAfterStrafeBackRightState;
 		this.AfterAnimationActions[AnimationStateList.Use] = this.AnimationAfterUseState;
 		this.AfterAnimationActions[AnimationStateList.Slide] = this.AnimationAfterSlideState;
+		this.AfterAnimationActions[AnimationStateList.Jump] = this.AnimationAfterJumpState;
 
+	}
+	public void FireJumpAnimationState() {
+		Debug.Log(characterIsDead);
+		Debug.Log(CharacterAnimationState);
+		Debug.Log(Character_Manager.CharacterControllerComponent.isGrounded);
+		if (this.characterIsDead
+		    || CharacterAnimationState == AnimationStateList.Jump 
+		    || !Character_Manager.CharacterControllerComponent.isGrounded) {
+			return ;
+		}
+		CharacterAnimationState = AnimationStateList.Jump;
+		animation.CrossFade("RunJump");
+		this.AnimationAfterJumpState();
 	}
 
 	public void	FireSlideAnimationState() {
@@ -146,6 +175,9 @@ public class Animation_Manager : MonoBehaviour {
 			return;
 			break;
 		case AnimationStateList.Slide:
+			return;
+			break;
+		case AnimationStateList.Jump:
 			return;
 			break;
 		default:
@@ -231,6 +263,9 @@ public class Animation_Manager : MonoBehaviour {
 		} else {
 			animation.CrossFade("RunBackwards");
 		}
+	}
+	public void AnimationAfterJumpState() {
+		animation.CrossFade("RunJump");
 	}
 
 }
